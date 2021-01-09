@@ -23,9 +23,20 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
-// $app->withFacades();
+// Enable Facades
+$app->withFacades();
 
-// $app->withEloquent();
+// Enable Eloquent
+$app->withEloquent();
+
+// Enable auth middleware (shipped with Lumen)
+$app->routeMiddleware([
+    'auth' => App\Http\Middleware\Authenticate::class,
+]);
+
+// Finally register two service providers - original one and Lumen adapter
+$app->register(Laravel\Passport\PassportServiceProvider::class);
+$app->register(Dusterio\LumenPassport\PassportServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +59,8 @@ $app->singleton(
     App\Console\Kernel::class
 );
 
+$app->register(Flipbox\LumenGenerator\LumenGeneratorServiceProvider::class);
+
 /*
 |--------------------------------------------------------------------------
 | Register Config Files
@@ -60,6 +73,9 @@ $app->singleton(
 */
 
 $app->configure('app');
+
+$app->configure('auth');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -105,6 +121,8 @@ $app->configure('app');
 | can respond to, as well as the controllers that may handle them.
 |
 */
+\Dusterio\LumenPassport\LumenPassport::routes($app);
+
 
 $app->router->group([
     'namespace' => 'App\Http\Controllers',

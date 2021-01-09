@@ -11,7 +11,7 @@ use Laravel\Lumen\Auth\Authorizable;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract
 {
-    use Authenticatable, Authorizable, HasFactory;
+    use Authenticatable, Authorizable, HasFactory, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -30,4 +30,19 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $hidden = [
         'password',
     ];
+
+    public function timeline()
+    {
+        return $this->hasOne(Timeline::class);
+    }
+
+    public function follower()
+    {
+        return $this->hasMany(Follow::class, 'id', 'following_to');
+    }
+
+    public function following()
+    {
+        return $this->hasMany(Follow::class, 'id', 'followed_by');
+    }
 }
